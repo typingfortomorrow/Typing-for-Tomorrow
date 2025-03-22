@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing for Tomorrow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 1em;
+        }
+        main {
+            margin: 20px;
+        }
+        #quote {
+            font-size: 20px;
+            margin: 20px;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #result, #liveStats {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .progress-bar {
+            width: 80%;
+            height: 30px;
+            background-color: #ddd;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 15px;
+        }
+        .progress {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+            border-radius: 15px;
+        }
+        .character {
+            font-size: 50px;
+            position: absolute;
+            top: -60px;
+            left: 0;
+            transition: left 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Typing for Tomorrow</h1>
+    </header>
+    <main>
+        <p id="quote">Press start to begin typing challenge!</p>
+        <textarea id="typingArea" placeholder="Start typing here..." disabled oninput="updateProgress()" onkeypress="handleKeyPress(event)"></textarea>
+        <br>
+        <button onclick="startGame()">Start</button>
+        <button onclick="checkTyping()" disabled id="checkBtn">Check Score</button>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <div class="character" id="character">🚀</div>
+        </div>
+        <p id="liveStats">WPM: 0 | Accuracy: 100%</p>
+        <p id="result"></p>
+    </main>
+    <script>
+        let startTime, quoteText;
+        const quotes = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Practice makes perfect, keep typing to improve your speed.",
+            "A journey of a thousand miles begins with a single step.",
+            "Hard work beats talent when talent doesn’t work hard.",
+            "The only limit to our realization of tomorrow is our doubts of today.",
+            "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            "Typing is a skill that grows stronger with practice and persistence.",
+            "Fast and accurate typing can unlock new opportunities in the digital world."
+        ];
+
+        function startGame() {
+            quoteText = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById("quote").innerText = quoteText;
+            document.getElementById("typingArea").value = "";
+            document.getElementById("typingArea").disabled = false;
+            document.getElementById("checkBtn").disabled = false;
+            document.getElementById("typingArea").focus();
+            document.getElementById("progressBar").style.width = "0%";
+            document.getElementById("character").style.left = "0%";
+            document.getElementById("liveStats").innerText = "WPM: 0 | Accuracy: 100%";
+            startTime = new Date().getTime();
+        }
+
+        function updateProgress() {
+            let text = document.getElementById("typingArea").value;
+            let currentTime = new Date().getTime();
+            let timeTaken = (currentTime - startTime) / 1000 / 60; // Convert ms to minutes
+            let wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+            let wpm = wordCount > 0 ? Math.round(wordCount / timeTaken) : 0;
+
+            let correctChars = 0;
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === quoteText[i]) correctChars++;
+            }
+            let accuracy = quoteText.length > 0 ? ((correctChars / quoteText.length) * 100).toFixed(2) : 100;
+
+            let progress = (correctChars / quoteText.length) * 100;
+            document.getElementById("progressBar").style.width = progress + "%";
+            document.getElementById("character").style.left = progress + "%";
+            document.getElementById("liveStats").innerText = `WPM: ${wpm} | Accuracy: ${accuracy}%`;
+        }
+
+        function checkTyping() {
+            let text = document.getElementById("typingArea").value;
+            let currentTime = new Date().getTime();
+            let timeTaken = (currentTime - startTime) / 1000 / 60; // Convert ms to minutes
+            let wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
+            let wpm = Math.round(wordCount / timeTaken);
+
+            let correctChars = 0;
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === quoteText[i]) correctChars++;
+            }
+            let accuracy = ((correctChars / quoteText.length) * 100).toFixed(2);
+
+            document.getElementById("result").innerText = `Final WPM: ${wpm}, Final Accuracy: ${accuracy}%`;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                checkTyping();
+            }
+        }
+    </script>
+</body>
+</html>
